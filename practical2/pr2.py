@@ -25,6 +25,7 @@ def removeDigits(inputString):
 
 
 def removeStopWords(inputString, stopWordsList):
+	inputString = inputString.replace('\n',' ')
 	inputString = inputString.split(' ')
 	inputString  = [word for word in inputString if word.lower() not in stopWordsList]
 	resultString = ' '.join(inputString)
@@ -32,12 +33,12 @@ def removeStopWords(inputString, stopWordsList):
 
 
 def writeFile(data, fileName):
-	preProcessedFile = open('preprocessed/'+fileName, 'w')
+	preProcessedFile = open('../preprocessed/'+fileName, 'w')
 	preProcessedFile.write(data)
 	preProcessedFile.close()
 
 def preProcess(fileName):
-	with open('./cricket/'+fileName) as inputFile:
+	with open('../cricket/'+fileName) as inputFile:
 		data = inputFile.read().lower()
 		stopWordsList = getStopWords()
 		data = removeStopWords(data, stopWordsList)
@@ -49,7 +50,7 @@ def preProcess(fileName):
 
 
 def fileExists(fileName):
-	if(os.path.exists('./cricket/'+fileName)):
+	if(os.path.exists('../cricket/'+fileName)):
 		return True
 	else:
 		return False
