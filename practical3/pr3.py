@@ -9,6 +9,7 @@ import os
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.tokenize import RegexpTokenizer
+from nltk.stem import PorterStemmer
 
 def fileExists(fileName):
 	if(os.path.exists('../cricket/'+fileName)):
@@ -34,6 +35,16 @@ def removeStopWords(content):
 		finalContent += word + " "
 	return finalContent
 
+def removeStemming(content):
+	posterStemmer = PorterStemmer()
+	wordList = word_tokenize(content)
+	resultContent = ""
+	for word in wordList:
+		resultContent += posterStemmer.stem(word) + " "
+	
+	return resultContent
+
+
 def removePunctuations(content):
 	tokenizer = RegexpTokenizer(r'\w+')
 	tokenizedContent = tokenizer.tokenize(content)
@@ -44,15 +55,20 @@ def removePunctuations(content):
 
 
 def writeFile(data, fileName):
-	preProcessedFile = open('../preprocessed/'+fileName, 'w')
+	preProcessedFile = open(fileName, 'w')
 	preProcessedFile.write(data)
 	preProcessedFile.close()
 
+def removeDigits(inputString):
+	resultString = ''.join([i for i in inputString if not i.isdigit()])
+	return resultString
 
 def processFile(fileName):
 	fileContent = getFileContent(fileName)
 	tokenizedContent = removePunctuations(fileContent)
-	finalContent = removeStopWords(tokenizedContent)
+	removedDigitsContent = removeDigits(tokenizedContent)
+	unstemmedContent = removeStemming(removedDigitsContent)
+	finalContent = removeStopWords(unstemmedContent)
 	processedFileName = fileName.replace('.txt','')
 	writeFile(finalContent, '../processed-nltk/'+ processedFileName + '-processed.txt')
 
@@ -61,6 +77,6 @@ fileName = input("Enter file name:")
 # fileName = '001.txt'
 if(fileExists(fileName)):
 	processFile(fileName)
-	print("Done processed and saved successfully!")
+	print("Done processing and saved successfully!")
 else:
 	print("Error file doesn't exist")
