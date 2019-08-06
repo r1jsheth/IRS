@@ -1,3 +1,8 @@
+"""
+ * @author raj
+ * @desc removes stopwords and punctuations from a file, using own logic
+"""
+
 import os
 from os import listdir
 from os.path import isfile, join

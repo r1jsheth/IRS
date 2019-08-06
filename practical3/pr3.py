@@ -1,3 +1,10 @@
+"""
+ * @author raj
+ * @create date 2019-08-06 12:16:04
+ * @modify date 2019-08-06 12:16:04
+ * @desc removes stopwords and punctuations from a file using nltk
+"""
+
 import os
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize

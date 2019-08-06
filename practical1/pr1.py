@@ -1,4 +1,7 @@
-
+"""
+ * @author raj
+ * @desc simply searches a phrase from a file
+"""
 import os
 
 print("Enter content to search:")
