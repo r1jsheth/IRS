@@ -1,7 +1,7 @@
 """
  * @author raj
  * @create date 2019-09-10 11:45:56
- * @modify date 2019-09-10 11:46:01
+ * @modify date 2019-09-10 12:12:12
  * @desc tf-idf and naive bayes to classify text documents
 """
 
@@ -53,20 +53,42 @@ def removePunctuations(content):
 	return finalContent
 
 
-for (root, dirs, files) in os.walk('../cricket'):
-	corpus = []
-	for file in files:
-		with open('../cricket/'+file, 'r') as fileInput:
-			content = removeStopWords(fileInput.read().lower())
-			content = removeStemming(content)
-			content = removeDigits(content)
-			content = removePunctuations(content)
-			corpus.append(content)
-	print(len(corpus))
-
-
+mergedCorpus = []
 vectorizer = TfidfVectorizer()
-X = vectorizer.fit_transform(corpus)
+finalContent = ''
 
-print(vectorizer.get_feature_names())
-print(X.shape)
+
+def preProcessData(content):
+	content = removeStopWords(content)
+	content = removeStemming(content)
+	content = removeDigits(content)
+	content = removePunctuations(content)
+	return content
+
+def processForDir(directoryPath):
+	
+	for (root, dirs, files) in os.walk(directoryPath):
+		corpus = []
+		for file in files:
+			with open(directoryPath+'/'+file, 'r') as fileInput:
+				content = preProcessData(fileInput.read().lower())
+				corpus.append(content)
+				mergedCorpus.append(content)
+				global finalContent 
+				finalContent += content
+
+	X = vectorizer.fit_transform(corpus)
+	# print(vectorizer.get_feature_names())
+	print(X.shape)
+
+
+processForDir('../bbcsport/athletics')
+processForDir('../bbcsport/cricket')
+processForDir('../bbcsport/rugby')
+processForDir('../bbcsport/tennis')
+processForDir('../bbcsport/football')
+
+finalContent = preProcessData(finalContent)
+
+finalX = vectorizer.fit_transform(mergedCorpus)
+print(finalX)
