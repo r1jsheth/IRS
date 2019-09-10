@@ -13,6 +13,11 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.tokenize import RegexpTokenizer
 from nltk.stem import PorterStemmer
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
+import numpy as np
+from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import train_test_split
 
 
 
@@ -77,27 +82,52 @@ def processForDir(directoryPath):
 				corpus = []
 				content = preProcessData(fileInput.read().lower())
 				corpus.append(content)
-				
+
 				mergedCorpus.append(content)
-				
+
 				global finalContent
 				finalContent += content
-				
+
 				# now labeling with filename
-				labeledData.append([directoryPath.replace('../bbcsport/','') + '/' + file,directoryPath.replace('../bbcsport/','')])
+				labeledData.append(directoryPath.replace('../bbcsport/',''))
+
 				X = vectorizer.fit_transform(corpus)
-				
-				
 				vectorizerList.append(X)
 
 	return vectorizerList
 
 athleticsVectorizerList = processForDir('../bbcsport/athletics')
+print(len(athleticsVectorizerList))
 cricketVectorizerList = processForDir('../bbcsport/cricket')
+print(len(cricketVectorizerList))
 rugbyVectorizerList = processForDir('../bbcsport/rugby')
+print(len(rugbyVectorizerList))
 tennisVectorizerList = processForDir('../bbcsport/tennis')
+print(len(tennisVectorizerList))
 
-print(len(labeledData))
+
+
+print(labeledData[0])
+
+
 
 finalContent = preProcessData(finalContent)
-finalX = vectorizer.fit_transform(mergedCorpus)
+Xfinal = vectorizer.fit_transform(mergedCorpus)
+
+
+print(Xfinal.shape)
+
+
+
+X_train, X_test, Y_train, Y_test = train_test_split(Xfinal, labeledData, test_size = 0.2)
+
+
+
+classifier = GaussianNB()
+classifier.fit(X_train.toarray(), Y_train)
+
+Y_predict = classifier.predict(X_test.toarray())
+
+
+print(confusion_matrix(Y_test, Y_predict))
+print(accuracy_score(Y_test, Y_predict))
