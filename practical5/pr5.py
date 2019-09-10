@@ -1,7 +1,7 @@
 """
  * @author raj
  * @create date 2019-09-10 11:45:56
- * @modify date 2019-09-10 12:12:12
+ * @modify date /
  * @desc tf-idf and naive bayes to classify text documents
 """
 
@@ -53,9 +53,6 @@ def removePunctuations(content):
 	return finalContent
 
 
-mergedCorpus = []
-vectorizer = TfidfVectorizer()
-finalContent = ''
 
 
 def preProcessData(content):
@@ -65,30 +62,42 @@ def preProcessData(content):
 	content = removePunctuations(content)
 	return content
 
+mergedCorpus = []
+vectorizer = TfidfVectorizer()
+finalContent = ''
+labeledData = []
+
 def processForDir(directoryPath):
 	
+	vectorizerList = []
+
 	for (root, dirs, files) in os.walk(directoryPath):
-		corpus = []
 		for file in files:
 			with open(directoryPath+'/'+file, 'r') as fileInput:
+				corpus = []
 				content = preProcessData(fileInput.read().lower())
 				corpus.append(content)
+				
 				mergedCorpus.append(content)
-				global finalContent 
+				
+				global finalContent
 				finalContent += content
+				
+				# now labeling with filename
+				labeledData.append([directoryPath.replace('../bbcsport/','') + '/' + file,directoryPath.replace('../bbcsport/','')])
+				X = vectorizer.fit_transform(corpus)
+				
+				
+				vectorizerList.append(X)
 
-	X = vectorizer.fit_transform(corpus)
-	# print(vectorizer.get_feature_names())
-	print(X.shape)
+	return vectorizerList
 
+athleticsVectorizerList = processForDir('../bbcsport/athletics')
+cricketVectorizerList = processForDir('../bbcsport/cricket')
+rugbyVectorizerList = processForDir('../bbcsport/rugby')
+tennisVectorizerList = processForDir('../bbcsport/tennis')
 
-processForDir('../bbcsport/athletics')
-processForDir('../bbcsport/cricket')
-processForDir('../bbcsport/rugby')
-processForDir('../bbcsport/tennis')
-processForDir('../bbcsport/football')
+print(len(labeledData))
 
 finalContent = preProcessData(finalContent)
-
 finalX = vectorizer.fit_transform(mergedCorpus)
-print(finalX)
