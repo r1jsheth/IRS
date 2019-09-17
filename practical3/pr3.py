@@ -72,6 +72,22 @@ def processFile(fileName):
 	processedFileName = fileName.replace('.txt','')
 	writeFile(finalContent, '../processed-nltk/'+ processedFileName + '-processed.txt')
 
+# import os 
+# from os import walk
+# def processFile(fileName):
+# 	fileContent = getFileContent(fileName)
+# 	fileContent = removeStopWords(fileContent)
+# 	# fileContent = removeStemming(fileContent)
+# 	fileContent = removeDigits(fileContent)
+# 	fileContent = removePunctuations(fileContent)
+# 	processedFileName = fileName.replace('.txt','')
+# 	writeFile(fileContent, '../processed-nltk/'+ processedFileName + '-processed.txt')
+
+# for (root, dirs, files) in os.walk('../cricket'):
+# 	for fileName in files:
+# 		processFile(fileName)
+# 		print(fileName)
+# exit(0)
 
 fileName = input("Enter file name:")
 # fileName = '001.txt'

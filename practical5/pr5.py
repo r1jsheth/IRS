@@ -107,19 +107,15 @@ print(len(tennisVectorizerList))
 
 
 
-print(labeledData[0])
-
-
-
 finalContent = preProcessData(finalContent)
-Xfinal = vectorizer.fit_transform(mergedCorpus)
+ = vectorizer.fit_transform(mergedCorpus)
 
 
-print(Xfinal.shape)
+print(final_vectorizer.shape)
 
 
 
-X_train, X_test, Y_train, Y_test = train_test_split(Xfinal, labeledData, test_size = 0.2)
+X_train, X_test, Y_train, Y_test = train_test_split(final_vectorizer, labeledData, test_size = 0.2)
 
 
 
@@ -127,7 +123,6 @@ classifier = GaussianNB()
 classifier.fit(X_train.toarray(), Y_train)
 
 Y_predict = classifier.predict(X_test.toarray())
-
 
 print(confusion_matrix(Y_test, Y_predict))
 print(accuracy_score(Y_test, Y_predict))
