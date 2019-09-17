@@ -78,9 +78,10 @@ def processForDir(directoryPath):
 
 	for (root, dirs, files) in os.walk(directoryPath):
 		for file in files:
-			with open(directoryPath+'/'+file, 'r') as fileInput:
+			with open(directoryPath+'/'+file, 'rb') as fileInput:
 				corpus = []
-				content = preProcessData(fileInput.read().lower())
+				content = fileInput.read().decode(errors='replace')
+				content = preProcessData(content.lower())
 				corpus.append(content)
 
 				mergedCorpus.append(content)
@@ -97,32 +98,64 @@ def processForDir(directoryPath):
 	return vectorizerList
 
 athleticsVectorizerList = processForDir('../bbcsport/athletics')
-print(len(athleticsVectorizerList))
+# print(len(athleticsVectorizerList))
 cricketVectorizerList = processForDir('../bbcsport/cricket')
-print(len(cricketVectorizerList))
+# print(len(cricketVectorizerList))
 rugbyVectorizerList = processForDir('../bbcsport/rugby')
-print(len(rugbyVectorizerList))
+# print(len(rugbyVectorizerList))
 tennisVectorizerList = processForDir('../bbcsport/tennis')
-print(len(tennisVectorizerList))
+# print(len(tennisVectorizerList))
+footballVectorizerList = processForDir('../bbcsport/football')
+
 
 
 
 finalContent = preProcessData(finalContent)
 final_vectorizer = vectorizer.fit_transform(mergedCorpus)
+final_vectorizer_array = final_vectorizer.toarray() 
+print(final_vectorizer_array.shape)
 
 
-print(final_vectorizer.shape)
+
+# applying SVD to reduce dimensionality
+u, s, vh = np.linalg.svd(final_vectorizer_array, full_matrices=False, compute_uv=True)
+
+number = 100
+
+print("Enter size")
+number = int(input())
+
+# Option 1 will create N X N matrix
+# reducted_data = np.dot(u, np.diag(s))
+truncatedManually = np.dot(u[:, :number], np.diag(s[:number]))
+print(truncatedManually.shape)
+
+# Option 2
+from sklearn.decomposition import TruncatedSVD
+
+truncatedSVD = TruncatedSVD(n_components = number)
+truncatedSVD_data = truncatedSVD.fit_transform(final_vectorizer.toarray())
+print(truncatedSVD_data.shape)
 
 
-
-X_train, X_test, Y_train, Y_test = train_test_split(final_vectorizer, labeledData, test_size = 0.2)
-
-
+# Predict on data truncated manually
+X_train, X_test, Y_train, Y_test = train_test_split(truncatedManually, labeledData, test_size = 0.2)
 
 classifier = GaussianNB()
-classifier.fit(X_train.toarray(), Y_train)
 
-Y_predict = classifier.predict(X_test.toarray())
+classifier.fit(X_train, Y_train)
+Y_predict = classifier.predict(X_test)
 
+print('manually')
+print(confusion_matrix(Y_test, Y_predict))
+print(accuracy_score(Y_test, Y_predict))
+
+# Predict on truncated by library
+X_train, X_test, Y_train, Y_test = train_test_split(truncatedSVD_data, labeledData, test_size = 0.2)
+
+classifier.fit(X_train, Y_train)
+Y_predict = classifier.predict(X_test)
+
+print('library')
 print(confusion_matrix(Y_test, Y_predict))
 print(accuracy_score(Y_test, Y_predict))
