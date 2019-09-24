@@ -1,8 +1,8 @@
 """
  * @author raj
  * @create date 2019-09-10 11:45:56
- * @modify date 2019-09-17 12:43:26
- * @desc tf-idf and naive bayes to classify text documents
+ * @modify date 2019-09-24 11:34:19
+ * @desc tf-idf and SVD to classify text documents
 """
 
 
