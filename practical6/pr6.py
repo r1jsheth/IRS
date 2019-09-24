@@ -1,7 +1,7 @@
 """
  * @author raj
  * @create date 2019-09-10 11:45:56
- * @modify date /
+ * @modify date 2019-09-17 12:43:26
  * @desc tf-idf and naive bayes to classify text documents
 """
 
@@ -98,64 +98,56 @@ def processForDir(directoryPath):
 	return vectorizerList
 
 athleticsVectorizerList = processForDir('../bbcsport/athletics')
-# print(len(athleticsVectorizerList))
 cricketVectorizerList = processForDir('../bbcsport/cricket')
-# print(len(cricketVectorizerList))
 rugbyVectorizerList = processForDir('../bbcsport/rugby')
-# print(len(rugbyVectorizerList))
 tennisVectorizerList = processForDir('../bbcsport/tennis')
-# print(len(tennisVectorizerList))
 footballVectorizerList = processForDir('../bbcsport/football')
-
-
-
 
 finalContent = preProcessData(finalContent)
 final_vectorizer = vectorizer.fit_transform(mergedCorpus)
 final_vectorizer_array = final_vectorizer.toarray() 
 print(final_vectorizer_array.shape)
 
+X_train, X_test, Y_train, Y_test = train_test_split(final_vectorizer_array, labeledData, test_size = 0.2, random_state = 15)
 
 
-# applying SVD to reduce dimensionality
-u, s, vh = np.linalg.svd(final_vectorizer_array, full_matrices=False, compute_uv=True)
+u,s,v = np.linalg.svd(X_train.T, full_matrices=True, compute_uv=True)
+print(u.shape)
+print(s.shape)
+print(v.shape)
 
-number = 100
+countt = 0
+best = -1
+best_at = 100
+for countt in range(0,489):
+	number = 100+countt
+	# number = 100
+	# number = int(input())
+	print("component size", number)
 
-print("Enter size")
-number = int(input())
+	U = u[:,:number]
+	V = v[:number, :]
+	print(U.shape)
+	print(V.shape)
 
-# Option 1 will create N X N matrix
-# reducted_data = np.dot(u, np.diag(s))
-truncatedManually = np.dot(u[:, :number], np.diag(s[:number]))
-print(truncatedManually.shape)
+	X_train_svd = V.T
+	Y_train_svd = Y_train
 
-# Option 2
-from sklearn.decomposition import TruncatedSVD
+	# Predict on truncated by library
+	classifier = GaussianNB()
+	classifier.fit(X_train_svd, Y_train_svd)
+	X_test_svd = np.matmul(X_test, U)
+	Y_test_svd = Y_test
+	Y_predict = classifier.predict(X_test_svd)
 
-truncatedSVD = TruncatedSVD(n_components = number)
-truncatedSVD_data = truncatedSVD.fit_transform(final_vectorizer.toarray())
-print(truncatedSVD_data.shape)
+	print('\n\nusing TruncatedSVD()')
+	print(confusion_matrix(Y_test_svd, Y_predict))
+	current_score = accuracy_score(Y_test_svd, Y_predict)
+	print(current_score)
 
+	if best < current_score:
+		best = current_score
+		best_at = number
 
-# Predict on data truncated manually
-X_train, X_test, Y_train, Y_test = train_test_split(truncatedManually, labeledData, test_size = 0.2)
-
-classifier = GaussianNB()
-
-classifier.fit(X_train, Y_train)
-Y_predict = classifier.predict(X_test)
-
-print('manually')
-print(confusion_matrix(Y_test, Y_predict))
-print(accuracy_score(Y_test, Y_predict))
-
-# Predict on truncated by library
-X_train, X_test, Y_train, Y_test = train_test_split(truncatedSVD_data, labeledData, test_size = 0.2)
-
-classifier.fit(X_train, Y_train)
-Y_predict = classifier.predict(X_test)
-
-print('library')
-print(confusion_matrix(Y_test, Y_predict))
-print(accuracy_score(Y_test, Y_predict))
+print("Max accuracy achieved at ", best_at, "accuracy ", best)
+print(best, best_at)
