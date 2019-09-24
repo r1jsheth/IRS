@@ -158,6 +158,6 @@ import matplotlib.pyplot as plt
 plt.plot(x_axis, y_axis)
 plt.xlabel('no of components')
 plt.ylabel('accuracy')
-plt.title("Accurcay Graph")
+plt.title('Accurcay Graph')
 plt.show()
-print("Max accuracy achieved at", best_at, "accuracy", best)
+print('Max accuracy achieved at', best_at, 'accuracy', best)
