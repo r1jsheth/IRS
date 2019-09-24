@@ -115,12 +115,15 @@ u,s,v = np.linalg.svd(X_train.T, full_matrices=True, compute_uv=True)
 print(u.shape)
 print(s.shape)
 print(v.shape)
+q,w = v.shape
 
 countt = 0
 best = -1
-best_at = 100
-for countt in range(0,489):
-	number = 100+countt
+best_at = 0
+x_axis = []
+y_axis = []
+for countt in range(1,q):
+	number = countt
 	# number = 100
 	# number = int(input())
 	print("component size", number)
@@ -140,14 +143,21 @@ for countt in range(0,489):
 	Y_test_svd = Y_test
 	Y_predict = classifier.predict(X_test_svd)
 
-	print('\n\nusing TruncatedSVD()')
-	print(confusion_matrix(Y_test_svd, Y_predict))
+	# print('\n\nusing TruncatedSVD()')
+	# print(confusion_matrix(Y_test_svd, Y_predict))
 	current_score = accuracy_score(Y_test_svd, Y_predict)
+	os.system("clear")
 	print(current_score)
-
+	x_axis.append(number)
+	y_axis.append(current_score)
 	if best < current_score:
 		best = current_score
 		best_at = number
 
-print("Max accuracy achieved at ", best_at, "accuracy ", best)
-print(best, best_at)
+import matplotlib.pyplot as plt
+plt.plot(x_axis, y_axis)
+plt.xlabel('no of components')
+plt.ylabel('accuracy')
+plt.title("Accurcay Graph")
+plt.show()
+print("Max accuracy achieved at", best_at, "accuracy", best)
