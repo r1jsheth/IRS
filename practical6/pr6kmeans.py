@@ -1,8 +1,8 @@
 """
  * @author raj
- * @create date 2019-09-10 11:45:56
- * @modify date 2019-09-24 11:34:19
- * @desc tf-idf, SVD and GuassianNB() to classify text documents
+ * @create date 2019-09-24 12:40:38
+ * @modify date 2019-10-01 11:25:24
+ * @desc tf-idf, SVD, kmeans to cluster text documents
 """
 
 
@@ -111,53 +111,31 @@ print(final_vectorizer_array.shape)
 X_train, X_test, Y_train, Y_test = train_test_split(final_vectorizer_array, labeledData, test_size = 0.2, random_state = 5)
 
 
-u,s,v = np.linalg.svd(X_train.T)
+u,s,v = np.linalg.svd(X_train.T, full_matrices=True, compute_uv=True)
 print(u.shape)
 print(s.shape)
 print(v.shape)
 q,w = v.shape
 
-countt = 0
-best = -1
-best_at = 0
-x_axis = []
-y_axis = []
-for countt in range(1,q):
-	number = countt
-	# number = 100
-	# number = int(input())
-	print("component size", number)
+number = 100
 
-	U = u[:,:number]
-	V = v[:number, :]
-	print(U.shape)
-	print(V.shape)
+U = u[:,:number]
+V = v[:number, :]
+print(U.shape)
+print(V.shape)
 
-	X_train_svd = V.T
-	Y_train_svd = Y_train
+X_train_svd = V.T
+Y_train_svd = Y_train
 
-	# Predict on truncated by library
-	classifier = GaussianNB()
-	classifier.fit(X_train_svd, Y_train_svd)
-	X_test_svd = np.matmul(X_test, U)
-	Y_test_svd = Y_test
-	Y_predict = classifier.predict(X_test_svd)
 
-	# print('\n\nusing TruncatedSVD()')
-	# print(confusion_matrix(Y_test_svd, Y_predict))
-	current_score = accuracy_score(Y_test_svd, Y_predict)
-	os.system("clear")
-	print(current_score)
-	x_axis.append(number)
-	y_axis.append(current_score)
-	if best < current_score:
-		best = current_score
-		best_at = number
+from sklearn.cluster import KMeans
 
-import matplotlib.pyplot as plt
-plt.plot(x_axis, y_axis)
-plt.xlabel('no of components')
-plt.ylabel('accuracy')
-plt.title('Accurcay Graph')
-plt.show()
-print('Max accuracy achieved at', best_at, 'accuracy', best)
+kmeans = KMeans(n_clusters = 5, random_state=0).fit(X_train_svd)
+
+X_test_svd = np.matmul(X_test, U)
+Y_test_svd = Y_test
+Y_predict = kmeans.predict(X_test_svd)
+
+
+# print('\n\nusing TruncatedSVD()')
+# print(confusion_matrix(Y_test_svd, Y_predict))

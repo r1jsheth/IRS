@@ -78,9 +78,11 @@ def processForDir(directoryPath):
 
 	for (root, dirs, files) in os.walk(directoryPath):
 		for file in files:
-			with open(directoryPath+'/'+file, 'r') as fileInput:
+			with open(directoryPath+'/'+file, 'rb') as fileInput:
 				corpus = []
-				content = preProcessData(fileInput.read().lower())
+
+				content = fileInput.read().decode(errors='replace')
+				content = preProcessData(content.lower())
 				corpus.append(content)
 
 				mergedCorpus.append(content)
@@ -104,6 +106,8 @@ rugbyVectorizerList = processForDir('../bbcsport/rugby')
 print(len(rugbyVectorizerList))
 tennisVectorizerList = processForDir('../bbcsport/tennis')
 print(len(tennisVectorizerList))
+footballVectorizerList = processForDir('../bbcsport/football')
+print(len(footballVectorizerList))
 
 
 
