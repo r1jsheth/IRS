@@ -1,9 +1,11 @@
 """
  * @author raj
  * @create date 2019-09-10 11:45:56
- * @modify date /
+ * @modify date 2019-10-15 11:58:59
  * @desc tf-idf and naive bayes to classify text documents
 """
+
+
 
 
 
@@ -67,60 +69,37 @@ def preProcessData(content):
 	content = removePunctuations(content)
 	return content
 
-mergedCorpus = []
-vectorizer = TfidfVectorizer()
-finalContent = ''
+corups = []
 labeledData = []
 
 def processForDir(directoryPath):
 	
-	vectorizerList = []
-
 	for (root, dirs, files) in os.walk(directoryPath):
 		for file in files:
+
 			with open(directoryPath+'/'+file, 'rb') as fileInput:
-				corpus = []
 
 				content = fileInput.read().decode(errors='replace')
 				content = preProcessData(content.lower())
-				corpus.append(content)
 
-				mergedCorpus.append(content)
-
-				global finalContent
-				finalContent += content
+				corups.append(content)
 
 				# now labeling with filename
 				labeledData.append(directoryPath.replace('../bbcsport/',''))
 
-				X = vectorizer.fit_transform(corpus)
-				vectorizerList.append(X)
 
-	return vectorizerList
+processForDir('../bbcsport/athletics')
+processForDir('../bbcsport/cricket')
+processForDir('../bbcsport/rugby')
+processForDir('../bbcsport/tennis')
+processForDir('../bbcsport/football')
 
-athleticsVectorizerList = processForDir('../bbcsport/athletics')
-print(len(athleticsVectorizerList))
-cricketVectorizerList = processForDir('../bbcsport/cricket')
-print(len(cricketVectorizerList))
-rugbyVectorizerList = processForDir('../bbcsport/rugby')
-print(len(rugbyVectorizerList))
-tennisVectorizerList = processForDir('../bbcsport/tennis')
-print(len(tennisVectorizerList))
-footballVectorizerList = processForDir('../bbcsport/football')
-print(len(footballVectorizerList))
+vectorizer = TfidfVectorizer()
+final_vectorizer = vectorizer.fit_transform(corups)
+final_vectorizer_array = final_vectorizer.toarray() 
+print(final_vectorizer_array.shape)
 
-
-
-finalContent = preProcessData(finalContent)
-final_vectorizer = vectorizer.fit_transform(mergedCorpus)
-
-
-print(final_vectorizer.shape)
-
-
-
-X_train, X_test, Y_train, Y_test = train_test_split(final_vectorizer, labeledData, test_size = 0.2)
-
+X_train, X_test, Y_train, Y_test = train_test_split(final_vectorizer_array, labeledData, test_size = 0.2, random_state = 5)
 
 
 classifier = GaussianNB()

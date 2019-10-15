@@ -1,10 +1,9 @@
 """
  * @author raj
- * @create date 2019-09-24 12:40:38
- * @modify date 2019-10-15 12:00:10
- * @desc tf-idf and k means to cluster text documents
+ * @create date 2019-10-15 11:53:27
+ * @modify date 
+ * @description Genetic Algorithms
 """
-
 
 
 
@@ -99,15 +98,3 @@ final_vectorizer_array = final_vectorizer.toarray()
 print(final_vectorizer_array.shape)
 
 X_train, X_test, Y_train, Y_test = train_test_split(final_vectorizer_array, labeledData, test_size = 0.2, random_state = 5)
-
-
-
-from sklearn.cluster import KMeans
-kmeans = KMeans(n_clusters = 5, random_state=0).fit(X_train)
-
-
-
-Y_predict = kmeans.predict(X_test.toarray())
-print(kmeans.cluster_centers_)
-print(Y_predict)
-print(kmeans.labels_)
