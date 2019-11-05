@@ -27,8 +27,6 @@ for x in ratingMatrix:
 	print()
 
 
-# print('For which user you want to recommend movie?')
-# userIdx = int(input())
 
 # remainingItems = []
 
@@ -129,7 +127,7 @@ def predictRatingMethodC(ratingMatrix, userIdx, itemIdx):
 		w_ij = numerator/denom
 		weight_map[i] = w_ij
 
-	print(weight_map)
+	# print(weight_map)
 
 
 	interRes = 0
@@ -139,6 +137,13 @@ def predictRatingMethodC(ratingMatrix, userIdx, itemIdx):
 		weightSum += weight_map[i]
 
 	result = r_avg + interRes/weightSum
-	print(result)
+	# print(result)
+	return result
 
-predictRatingMethodC(ratingMatrix, 0, 1)
+print('For which user you want to recommend movie?')
+userIdx = int(input())
+
+for j in range(0, len(ratingMatrix[0])):
+	if math.isnan(ratingMatrix[userIdx][j]):
+		rating = predictRatingMethodC(ratingMatrix, userIdx, j)
+		print('Movie',j,'predicated rating is:',rating)
